@@ -1,18 +1,19 @@
-const LOGIN = "AUTH_REDUSER_USER_LOGIN";
-const LOGOUT = "AUTH_REDUSER_USER_LOGOUT";
+const LOGIN = "AUTH_REDUCER_USER_LOGIN";
+const LOGOUT = "AUTH_REDUCER_USER_LOGOUT";
 
 let user = JSON.parse(localStorage.getItem("user"));
 
-const initialState = user ? { user, isAuth: true } : {user: {userName: "", password: ""}};
+const initialState = user
+    ? { user, isAuth: true }
+    : { user: { userName: "", password: "" } };
 
-const authReduser = (state = initialState, action) => {
+const authReducer = (state = initialState, action) => {
     switch (action.type) {
         case LOGIN:
             return {
                 ...state,
                 user: {
-                    userName: action.userName,
-                    password: action.password,
+                    ...action.user,
                 },
                 isAuth: true,
             };
@@ -27,11 +28,10 @@ const authReduser = (state = initialState, action) => {
     }
 };
 
-export const loginCreator = (userName, password) => {
+export const loginCreator = (user) => {
     return {
         type: LOGIN,
-        userName,
-        password,
+        user,
     };
 };
 
@@ -41,13 +41,11 @@ export const logoutCreator = () => {
     };
 };
 
-
 export const logoutThunk = () => {
     return (dispatch) => {
         localStorage.clear();
-        dispatch(logoutCreator())
-    }
-}
+        dispatch(logoutCreator());
+    };
+};
 
-
-export default authReduser;
+export default authReducer;

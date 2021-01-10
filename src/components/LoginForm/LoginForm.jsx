@@ -3,24 +3,21 @@ import { Form, Input, Button } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { compose } from "redux";
 import { connect } from "react-redux";
-import { loginCreator } from "../../store/reducers/authReduser";
+import { loginCreator } from "../../store/reducers/authReducer";
 import { Redirect } from "react-router-dom";
 
 const LoginForm = (props) => {
     const [form] = Form.useForm();
 
-    const submitForm = (valuesForm) => {
-        let user = {
-            userName: valuesForm.username,
-            password: valuesForm.password,
-        };
+    const submitForm = (user) => {
+        
 
         localStorage.setItem("user", JSON.stringify(user));
-        props.loginCreator(valuesForm.username, valuesForm.password);
+        props.loginCreator(user);
         form.resetFields();
     };
     
-    if (props.isAuth) return <Redirect to="/settings"/>;
+    if (props.isAuth) return <Redirect to="/cards"/>;
     return (
         <Form
             form={form}
@@ -32,7 +29,7 @@ const LoginForm = (props) => {
             onFinish={submitForm}
         >
             <Form.Item
-                name="username"
+                name="userName"
                 rules={[
                     {
                         required: true,

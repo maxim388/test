@@ -1,18 +1,27 @@
 import { Menu, Dropdown } from "antd";
-import { DownOutlined, EditOutlined } from "@ant-design/icons";
-import { connect } from "react-redux";
-import { Link, NavLink } from "react-router-dom";
-
-// {props.keySubUsers ? <></> : <DownOutlined />}
+import { EditOutlined } from "@ant-design/icons";
+import { NavLink } from "react-router-dom";
+import { useState } from "react";
 
 const DropdawnUsers = (props) => {
+    const [name, setName] = useState(props.userName);
+    
+
     const subUsers = (
         <Menu>
             {props.keySubUsers.map((key) => {
                 return (
-                    <Menu.Item>
+                    <Menu.Item key={key.toString()}>
                         <div>
-                            <NavLink to={`/user/${key}`}>{key} | </NavLink>
+                            <NavLink
+                                to={`/cards/user/${key}`}
+                                // onClick={(e) => {
+                                //     e.preventDefault();
+                                //     setName(key);
+                                // }}
+                            >
+                                {key} |{" "}
+                            </NavLink>
                             <NavLink to={`/settings/${key}`}>
                                 <EditOutlined />
                             </NavLink>
@@ -22,14 +31,17 @@ const DropdawnUsers = (props) => {
             })}
         </Menu>
     );
+
     return (
         <Dropdown overlay={subUsers} placement="bottomLeft">
-            <Link
+            <a
                 className="ant-dropdown-link"
-                onClick={(e) => e.preventDefault()}
+                onClick={(e) => {
+                    e.preventDefault();
+                }}
             >
-                {props.userName}
-            </Link>
+                {name}
+            </a>
         </Dropdown>
     );
 };

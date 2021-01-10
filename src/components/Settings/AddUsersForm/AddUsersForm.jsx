@@ -22,67 +22,43 @@ const validateMessages = {
     },
 };
 
-const AddUsersForm = (props) => {
+const AddUsersForm = React.memo((props) => {
     const [form] = Form.useForm();
 
-    const [id, setID] = useState(0);
     const [fullName, setFullName] = useState(props.user.fullName);
     const [email, setEmail] = useState(props.user.email);
     const [age, setAge] = useState(props.user.age);
     const [aboutMeSelf, setAboutMeSelf] = useState(props.user.aboutMeSelf);
 
-    useEffect( async () => {
+    useEffect(() => {
         let promise = new Promise((resolve) => {
             setFullName(props.user.fullName);
             setEmail(props.user.email);
             setAge(props.user.age);
             setAboutMeSelf(props.user.aboutMeSelf);
             resolve();
-        })
-        await promise;
-        form.resetFields();
-        
-
-        // setFullName(props.user.fullName);
-        //     setEmail(props.user.email);
-        //     setAge(props.user.age);
-        //     setAboutMeSelf(props.user.aboutMeSelf);
-        // setTimeout(() => {
-        //     form.resetFields();
-        // }, 300);
+        });
+        promise.then(() => {
+            form.resetFields();
+        });
     }, [props.user]);
 
     // useEffect(() => {
-    //     setFullName(props.user.fullName);
-    // }, [props.user.fullName]);
-
-    // useEffect(() => {
-    //     setEmail(props.user.email);
-    // }, [props.user.email]);
-
-    // useEffect(() => {
-    //     setAge(props.user.age);
-    // }, [props.user.age]);
-
-    // useEffect(() => {
-    //     setAboutMeSelf(props.user.aboutMeSelf);
-    // }, [props.user.aboutMeSelf]);
+    //     form.resetFields();
+    // }, [props.id]);
 
     const submitSubForm = (values) => {
-        props.updateKeySubUsersThunk(values);
-        props.addUsersCreator(values, id);
-        // form.resetFields();
-        setID(id + 1);
+        props.updateSubUsersThunk(values, props.id);
+        // props.updateUsersCreator(values, props.id);
+        form.resetFields();
+        closeUser();
     };
 
     const closeUser = () => {
-        props.push("/settings");
+        props.push("/settings/");
     };
 
-    const updateFullName = () => {};
-
-    debugger;
-
+    // const updateFullName = () => {};
     return (
         <Form
             form={form}
@@ -100,8 +76,8 @@ const AddUsersForm = (props) => {
             <Form.Item
                 name={"fullName"}
                 label="Fullname"
-                onChange={(e) => setFullName(e.currentTarget.value)}
-                onBlur={updateFullName}
+                // onChange={(e) => setFullName(e.currentTarget.value)}
+                // onBlur={updateFullName}
                 rules={[
                     {
                         required: true,
@@ -113,7 +89,7 @@ const AddUsersForm = (props) => {
             <Form.Item
                 name={"email"}
                 label="Email"
-                onChange={(e) => setEmail(e.currentTarget.value)}
+                // onChange={(e) => setEmail(e.currentTarget.value)}
                 rules={[
                     {
                         type: "email",
@@ -125,7 +101,7 @@ const AddUsersForm = (props) => {
             <Form.Item
                 name={"age"}
                 label="Age"
-                onBlur={(e) => setAge(e.currentTarget.value)}
+                // onBlur={(e) => setAge(e.currentTarget.value)}
                 rules={[
                     {
                         type: "number",
@@ -139,7 +115,7 @@ const AddUsersForm = (props) => {
             <Form.Item
                 name={"aboutMeSelf"}
                 label="About myself"
-                onChange={(e) => setAboutMeSelf(e.currentTarget.value)}
+                // onChange={(e) => setAboutMeSelf(e.currentTarget.value)}
                 rules={[
                     {
                         required: true,
@@ -151,7 +127,9 @@ const AddUsersForm = (props) => {
             <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
                 {fullName ? (
                     <>
-                        <Button type="default">Edit User</Button>
+                        <Button type="default" htmlType="submit">
+                            Edit User
+                        </Button>
                         <Button type="danger" onClick={closeUser}>
                             Close User
                         </Button>
@@ -164,7 +142,7 @@ const AddUsersForm = (props) => {
             </Form.Item>
         </Form>
     );
-};
+});
 export default AddUsersForm;
 
 // const AddUsersForm = (props) => {

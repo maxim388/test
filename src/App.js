@@ -4,13 +4,14 @@ import "antd/dist/antd.css";
 import { Layout, Menu, Breadcrumb, Row, Col } from "antd";
 import { NavLink, Route } from "react-router-dom";
 import Settings from "./components/Settings/Settings";
-import Home from "./components/Home/Home";
+// import CardsAPI from "./components/CardsAPI/CardsAPI";
 import AuthUserState from "./components/AuthUserState/AuthUserState";
-import { SettingOutlined, UserAddOutlined } from "@ant-design/icons";
+import { SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { connect } from "react-redux";
 import DropdawnUsers from "./components/DropdawnUsers/DropdawnUsers";
-import User from "./components/DropdawnUsers/User/User";
-import UpdateUsersForm from "./components/Settings/UpdateUsersForm/UpdateUsersForm";
+// import User from "./components/User/User";
+// import Auxiliary from "./components/Auxiliary/Auxiliary";
+import Home from "./components/Home/Home";
 
 const { Header, Content, Footer } = Layout;
 
@@ -22,7 +23,7 @@ function App(props) {
                     <Col span={22}>
                         <Menu theme="dark" mode="horizontal">
                             <Menu.Item key="1">
-                                <NavLink to="/">Home</NavLink>
+                                <NavLink to="/cards">Home</NavLink>
                             </Menu.Item>
 
                             {props.userName ? (
@@ -34,10 +35,9 @@ function App(props) {
                                         </NavLink>
                                     </Menu.Item>
                                     <Menu.Item key="3">
-                                        <UserAddOutlined />
+                                        <UserOutlined />
                                         <DropdawnUsers
                                             userName={props.userName}
-                                            users={props.users}
                                             keySubUsers={props.keySubUsers}
                                         />
                                     </Menu.Item>
@@ -65,18 +65,14 @@ function App(props) {
                     className="site-layout-background"
                     style={{ padding: 24, minHeight: 380 }}
                 >
-                    <Route exact path="/" render={() => <Home />} />
+                    <Route path="/cards/:key?" render={() => <Home />} />
+                    {/* <Route exact path="/cards" render={() => <CardsAPI />} /> */}
+                    {/* <Route path="/cards/:key" render={() => <User />} /> */}
+                    {/* <Route exact path="/cards/auxiliary" render={() => <Auxiliary/>} /> */}
+
                     <Route path="/settings/:key?" render={() => <Settings />} />
 
-                    {/* <Route path="/settings/:key" render={() => <EditUser />} /> */}
-
                     <Route path="/auth" render={() => <LoginForm />} />
-
-
-
-                    <Route path="/user" render={() => <User />} />
-
-                    {/* <NavLink to={`/user/${key}`}>{key}</NavLink> */}
                 </div>
             </Content>
             <Footer style={{ textAlign: "center" }}>Maxim Alenchikov :)</Footer>
@@ -89,7 +85,6 @@ const mapStateToProps = (state) => {
         userName: state.auth.user.userName,
         users: state.subUsers.users,
         keySubUsers: state.subUsers.keySubUsers,
-
     };
 };
 

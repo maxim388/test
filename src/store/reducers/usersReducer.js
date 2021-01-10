@@ -1,71 +1,77 @@
-const ADD_USERS = "USERS_REDUSER_ADD_USERS";
-const UPDATE_KEYS_USERS = "USERS_REDUSER_UPDATE_KEYS_USERS";
-const UPDATE_FULL_NAME = "USERS_REDUSER_UPDATE_FULL_NAME";
+const UPDATE_USERS = "USERS_REDUCER_UPDATE_USERS";
+const UPDATE_KEYS_USERS = "USERS_REDUCER_UPDATE_KEYS_USERS";
+
+const updateData = () => {
+    let keys = Object.keys(localStorage).filter((u) => u !== "user");
+    let users = {};
+    for (let key of keys) {
+        users[key] = JSON.parse(localStorage.getItem(key));
+    }
+    return [keys, users];
+};
+// Важно!!!
+// function setArray(array) {
+//     let newArray = [];
+//     array.map(item =>
+//       newArray.push({
+//         id: item._id,
+//         text: item.text
+//       })
+//     );
+  
+//     return newArray;
+//   }
 
 
-let keys = Object.keys(localStorage).filter((u) => u !== "user");
-let users = {};
-for (let key of keys) {
-    users[key] = JSON.parse(localStorage.getItem(key));
-}
+
+
 
 const initialState = {
-    users: users,
-    keySubUsers: keys,
+    keySubUsers: updateData()[0],
+    users: updateData()[1],
 };
 
 const usersReducer = (state = initialState, action) => {
     switch (action.type) {
-        case ADD_USERS:
-            let key = action.subUser.fullName;
-   
+        case UPDATE_USERS:
             return {
-                
                 ...state,
-                users: {
-                    ...state.users,
-                    [key]: { ...action.subUser, id: action.id },
-                },
+                users: { ...action.subUsers },
             };
+
         case UPDATE_KEYS_USERS:
             if (action.key === null) return { ...state, keySubUsers: [] };
             return {
                 ...state,
-                keySubUsers: [...state.keySubUsers, action.key],
+                keySubUsers: [...action.keys],
             };
 
-        case UPDATE_FULL_NAME:
-            return {
-                ...state,
-            };
         default:
             return state;
     }
 };
 
-export const addUsersCreator = (subUser, id) => {
-
+export const updateUsersCreator = (subUsers = {}) => {
     return {
-        type: ADD_USERS,
-        subUser,
-        id,
+        type: UPDATE_USERS,
+        subUsers,
     };
 };
 
-export const updateKeySubUsersCreator = (key = null) => {
+export const updateKeySubUsersCreator = (keys = []) => {
     return {
         type: UPDATE_KEYS_USERS,
-        key,
+        keys,
     };
 };
 
-
-
-
-export const updateKeySubUsersThunk = (subUser) => {
+export const updateSubUsersThunk = (subUser, id) => {
     return (dispatch) => {
+        localStorage.removeItem([id], JSON.stringify(subUser));
         localStorage.setItem([subUser.fullName], JSON.stringify(subUser));
-        dispatch(updateKeySubUsersCreator(subUser.fullName));
+
+        dispatch(updateKeySubUsersCreator(updateData()[0]));
+        dispatch(updateUsersCreator(updateData()[1]));
     };
 };
 
