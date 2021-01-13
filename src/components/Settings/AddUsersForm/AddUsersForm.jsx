@@ -1,6 +1,13 @@
 import "./AddUsersForm.css";
 import React, { useEffect, useState } from "react";
+import { compose } from "redux";
+import { connect } from "react-redux";
 import { Form, Input, InputNumber, Button } from "antd";
+import {
+    setUserThunk,
+    updateUserThunk,
+} from "../../../store/reducers/usersReducer";
+import { withRouter } from "react-router-dom";
 
 const layout = {
     labelCol: {
@@ -24,7 +31,6 @@ const validateMessages = {
 
 const AddUsersForm = React.memo((props) => {
     const [form] = Form.useForm();
-
     const [fullName, setFullName] = useState(props.user.fullName);
     const [email, setEmail] = useState(props.user.email);
     const [age, setAge] = useState(props.user.age);
@@ -43,28 +49,41 @@ const AddUsersForm = React.memo((props) => {
         });
     }, [props.user]);
 
-    // useEffect(() => {
-    //     form.resetFields();
-    // }, [props.id]);
-
-    const submitSubForm = (values) => {
-        props.updateSubUsersThunk(values, props.id);
-        // props.updateUsersCreator(values, props.id);
-        form.resetFields();
-        closeUser();
+    const closeForm = () => {
+        props.history.push("/settings/");
     };
 
-    const closeUser = () => {
-        props.push("/settings/");
+    const onFinish = () => {
+        if (props.match.params.key) {
+            return (values) => {
+                let clone = props.keySubUsers.findIndex(
+                    (k) => k === values.fullName
+                );
+                props.updateUserThunk(
+                    values,
+                    props.match.params.key,
+                    props.index,
+                    clone
+                );
+                form.resetFields();
+                closeForm();
+            };
+        } else {
+            return (values) => {
+                let clone = props.keySubUsers.findIndex(
+                    (k) => k === values.fullName
+                );
+                props.setUserThunk(values, clone);
+                form.resetFields();
+            };
+        }
     };
 
-    // const updateFullName = () => {};
     return (
         <Form
             form={form}
             {...layout}
-            name="nest-messages"
-            onFinish={submitSubForm}
+            onFinish={onFinish()}
             validateMessages={validateMessages}
             initialValues={{
                 fullName: fullName,
@@ -76,8 +95,6 @@ const AddUsersForm = React.memo((props) => {
             <Form.Item
                 name={"fullName"}
                 label="Fullname"
-                // onChange={(e) => setFullName(e.currentTarget.value)}
-                // onBlur={updateFullName}
                 rules={[
                     {
                         required: true,
@@ -89,7 +106,6 @@ const AddUsersForm = React.memo((props) => {
             <Form.Item
                 name={"email"}
                 label="Email"
-                // onChange={(e) => setEmail(e.currentTarget.value)}
                 rules={[
                     {
                         type: "email",
@@ -101,7 +117,6 @@ const AddUsersForm = React.memo((props) => {
             <Form.Item
                 name={"age"}
                 label="Age"
-                // onBlur={(e) => setAge(e.currentTarget.value)}
                 rules={[
                     {
                         type: "number",
@@ -115,7 +130,6 @@ const AddUsersForm = React.memo((props) => {
             <Form.Item
                 name={"aboutMeSelf"}
                 label="About myself"
-                // onChange={(e) => setAboutMeSelf(e.currentTarget.value)}
                 rules={[
                     {
                         required: true,
@@ -128,9 +142,9 @@ const AddUsersForm = React.memo((props) => {
                 {fullName ? (
                     <>
                         <Button type="default" htmlType="submit">
-                            Edit User
+                            Save User
                         </Button>
-                        <Button type="danger" onClick={closeUser}>
+                        <Button type="danger" onClick={closeForm}>
                             Close User
                         </Button>
                     </>
@@ -143,110 +157,8 @@ const AddUsersForm = React.memo((props) => {
         </Form>
     );
 });
-export default AddUsersForm;
 
-// const AddUsersForm = (props) => {
-//     // handleSubmit = (e) => {
-//     //     e.preventDefault();
-//     //     this.props.form.validateFields((err, values) => {
-//     //         if (!err) {
-//     //             console.log("Received values of form: ", values);
-//     //         }
-//     //     });
-//     // };
-//     // normFile = (e) => {
-//     //     console.log("Upload event:", e);
-//     //     if (Array.isArray(e)) {
-//     //         return e;
-//     //     }
-//     //     return e && e.fileList;
-//     // };
-//     // render() {
-//     const { getFieldDecorator } = props.form;
-//     const formItemLayout = {
-//         labelCol: { span: 6 },
-//         wrapperCol: { span: 14 },
-//     };
-//     return (
-//         <Form >
-//             <FormItem {...formItemLayout} label="Plain Text">
-//                 <span className="ant-form-text">China</span>
-//             </FormItem>
-//             <FormItem {...formItemLayout} label="Select" hasFeedback>
-//                 {getFieldDecorator("select", {
-//                     rules: [
-//                         {
-//                             required: true,
-//                             message: "Please select your country!",
-//                         },
-//                     ],
-//                 })(
-//                     <Select placeholder="Please select a country">
-//                         <Option value="china">China</Option>
-//                         <Option value="use">U.S.A</Option>
-//                     </Select>
-//                 )}
-//             </FormItem>
-
-//             <FormItem {...formItemLayout} label="Select[multiple]">
-//                 {getFieldDecorator("select-multiple", {
-//                     rules: [
-//                         {
-//                             required: true,
-//                             message: "Please select your favourite colors!",
-//                             type: "array",
-//                         },
-//                     ],
-//                 })(
-//                     <Select
-//                         mode="multiple"
-//                         placeholder="Please select favourite colors"
-//                     >
-//                         <Option value="red">Red</Option>
-//                         <Option value="green">Green</Option>
-//                         <Option value="blue">Blue</Option>
-//                     </Select>
-//                 )}
-//             </FormItem>
-
-//             <FormItem {...formItemLayout} label="InputNumber">
-//                 {getFieldDecorator("input-number", { initialValue: 3 })(
-//                     <InputNumber min={1} max={10} />
-//                 )}
-//                 <span className="ant-form-text"> machines</span>
-//             </FormItem>
-
-//             <FormItem {...formItemLayout} label="Switch">
-//                 {getFieldDecorator("switch", { valuePropName: "checked" })(
-//                     <Switch />
-//                 )}
-//             </FormItem>
-
-//             <FormItem {...formItemLayout} label="Radio.Group">
-//                 {getFieldDecorator("radio-group")(
-//                     <RadioGroup>
-//                         <Radio value="a">item 1</Radio>
-//                         <Radio value="b">item 2</Radio>
-//                         <Radio value="c">item 3</Radio>
-//                     </RadioGroup>
-//                 )}
-//             </FormItem>
-
-//             <FormItem {...formItemLayout} label="Radio.Button">
-//                 {getFieldDecorator("radio-button")(
-//                     <RadioGroup>
-//                         <RadioButton value="a">item 1</RadioButton>
-//                         <RadioButton value="b">item 2</RadioButton>
-//                         <RadioButton value="c">item 3</RadioButton>
-//                     </RadioGroup>
-//                 )}
-//             </FormItem>
-
-//                 <FormItem wrapperCol={{ span: 12, offset: 6 }}>
-//                 <Button type="primary" htmlType="submit">
-//                     Submit
-//                 </Button>
-//             </FormItem>
-//         </Form>
-//     );
-// };
+export default compose(
+    connect(null, { setUserThunk, updateUserThunk }),
+    withRouter
+)(AddUsersForm);

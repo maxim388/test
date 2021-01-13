@@ -3,21 +3,18 @@ import { Form, Input, Button } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { compose } from "redux";
 import { connect } from "react-redux";
-import { loginCreator } from "../../store/reducers/authReducer";
+import { loginThunk } from "../../store/reducers/authReducer";
 import { Redirect } from "react-router-dom";
 
 const LoginForm = (props) => {
     const [form] = Form.useForm();
 
     const submitForm = (user) => {
-        
-
-        localStorage.setItem("user", JSON.stringify(user));
-        props.loginCreator(user);
+        props.loginThunk(user);
         form.resetFields();
     };
-    
-    if (props.isAuth) return <Redirect to="/cards"/>;
+
+    if (props.isAuth) return <Redirect to="/settings" />;
     return (
         <Form
             form={form}
@@ -76,7 +73,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default compose(
-    connect(mapStateToProps, { loginCreator })
-    //withAuthRedirect
-)(LoginForm);
+export default compose(connect(mapStateToProps, { loginThunk }))(LoginForm);

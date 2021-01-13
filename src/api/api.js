@@ -2,43 +2,38 @@ import axios from "axios";
 
 const instance = axios.create({
     baseURL: "https://cors-anywhere.herokuapp.com/",
+    timeout: 1500,
 });
 
 export const getDogs = () => {
-    return instance.get("https://random.dog/woof.json");
+    return instance
+        .get("https://dog.ceo/api/breeds/image/random")
+        .then((response) => {
+            if (response.data.status !== "success") {
+                throw new Error();
+            }
+            return response.data.message;
+        });
 };
 
 export const getFoxs = () => {
-    return instance.get("https://randomfox.ca/floof/");
+    return instance
+        .get("https://randomfox.ca/floof/")
+        .then((response) => {
+            if (!response.data.image) {
+                throw new Error();
+            }
+            return response.data.image;
+        });
 };
 
 export const getCats = () => {
-    return instance.get("https://aws.random.cat/meow");
+    return instance
+        .get("https://aws.random.cat/meow")
+        .then((response) => {
+                if (!response.data.file) {
+                    throw new Error();
+                }
+                return response.data.file;
+        });
 };
-
-// export const getAnimeNews = () => {
-//     let arr = [
-//         100,
-//         101,
-//         102,
-//         200,
-//         201,
-//         202,
-//         204,
-//         206,
-//         207,
-//         300,
-//         301,
-//         302,
-//         303,
-//         304,
-//         305,
-//         307,
-//     ];
-//     function randomInteger() {
-//         let num = 0.5 + Math.random() * (arr.length - 1 + 1);
-//         return Math.round(num);
-//     }
-
-//     return instance.get(`https://http.cat/${arr[num]}`);
-// };

@@ -3,8 +3,9 @@ import defaultAnimalDog from "../../img/animal_dog.jpg";
 import defaultAnimalFox from "../../img/animal_fox.jpg";
 import defaultAnimalCat from "../../img/animal_cat.jpg";
 
-const SET_ANIMAL = "WORK_WITH_API_REDUCER_SET_ANIMAL";
-const TOOGLE_IS_FETCHING = "WORK_WITH_API_REDUCER_TOOGLE_IS_FETCHING";
+const SET_ANIMAL = "API_REDUCER_SET_ANIMAL";
+const TOOGLE_IS_FETCHING = "API_REDUCER_TOOGLE_IS_FETCHING";
+const RANDOM_CARDS = "API_REDUCER_RANDOM_CARDS";
 
 const initialState = {
     Dogs: {
@@ -28,9 +29,10 @@ const initialState = {
         isFetching: false,
         result: "",
     },
+    keysApi: ["Dogs", "RandomFox", "RandomCat"],
 };
 
-const workWithAPIReducer = (state = initialState, action) => {
+const apiReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_ANIMAL:
             return {
@@ -49,13 +51,17 @@ const workWithAPIReducer = (state = initialState, action) => {
                     isFetching: action.isFetching,
                 },
             };
-
+        case RANDOM_CARDS:
+            return {
+                ...state,
+                keysApi: [...action.randomApi],
+            };
         default:
             return state;
     }
 };
 
-export const toogleIsFetching = (isFetching, key) => {
+const toogleIsFetching = (isFetching, key) => {
     return {
         type: TOOGLE_IS_FETCHING,
         isFetching,
@@ -63,7 +69,7 @@ export const toogleIsFetching = (isFetching, key) => {
     };
 };
 
-export const setAnimalCreator = (url, key) => {
+const setAnimal = (url, key) => {
     return {
         type: SET_ANIMAL,
         url,
@@ -71,41 +77,58 @@ export const setAnimalCreator = (url, key) => {
     };
 };
 
+const randomCards = (randomApi) => {
+    return {
+        type: RANDOM_CARDS,
+        randomApi,
+    };
+};
 
-
-
-const getAnimalCreator = async (apiKey, getAnimal, dispatch) => {
+const getAnimalThunk = async (apiKey, getAnimal, dispatch) => {
     dispatch(toogleIsFetching(true, apiKey));
 
-    let responce = await getAnimal();
+    let url = await getAnimal();
 
-    if (!responce.data) {
-        throw new Error();
-    }
-
-    dispatch(setAnimalCreator(responce.data.url, apiKey));
+    dispatch(setAnimal(url, apiKey));
     dispatch(toogleIsFetching(false, apiKey));
 };
 
-
 export const getDogsThunk = (apiKey) => {
     return async (dispatch) => {
-        getAnimalCreator(apiKey, getDogs, dispatch);
+        getAnimalThunk(apiKey, getDogs, dispatch);
     };
 };
 
-export const getFoxsThunk = (apiKey) => {
+export const getRandomFoxThunk = (apiKey) => {
     return async (dispatch) => {
-        getAnimalCreator(apiKey, getFoxs, dispatch);
+        getAnimalThunk(apiKey, getFoxs, dispatch);
     };
 };
 
-export const getCatsThunk = (apiKey) => {
+export const getRandomCatThunk = (apiKey) => {
     return async (dispatch) => {
-        getAnimalCreator(apiKey, getCats, dispatch);
+        getAnimalThunk(apiKey, getCats, dispatch);
     };
 };
 
+export const randomThunk = (keysApi) => {
+    return (dispatch) => {
+        const random = () => {
+            let cards = keysApi.slice();
+            let randomCards = [];
+            let k = cards.length;
+            for (let i = 0; i < k; i) {
+                let num = (Math.random() - 0.5) * (cards.length + 1);
+                let [elem] = cards.splice(Math.round(num), 1);
+                if (elem) {
+                    randomCards.push(elem);
+                    i++;
+                }
+            }
+            return randomCards;
+        };
+        dispatch(randomCards(random()));
+    };
+};
 
-
-export default workWithAPIReducer;
+export default apiReducer;

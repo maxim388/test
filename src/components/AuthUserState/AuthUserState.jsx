@@ -2,14 +2,12 @@ import { Button } from "antd";
 import { connect } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { logoutThunk } from "../../store/reducers/authReducer";
-import { updateKeySubUsersCreator, updateUsersCreator } from "../../store/reducers/usersReducer";
-
+import { clearUsers } from "../../store/reducers/usersReducer";
 
 const AuthUserState = (props) => {
     const logout = () => {
         props.logoutThunk();
-        props.updateKeySubUsersCreator();
-        props.updateUsersCreator();
+        props.clearUsers();
     };
 
     return (
@@ -36,6 +34,5 @@ const mapStateToProps = (state) => {
 };
 export default connect(mapStateToProps, {
     logoutThunk,
-    updateKeySubUsersCreator,
-    updateUsersCreator,
+    clearUsers,
 })(AuthUserState);

@@ -1,13 +1,29 @@
+import React, { useState } from "react";
 import { Menu, Dropdown } from "antd";
-import { EditOutlined } from "@ant-design/icons";
-import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Link, NavLink } from "react-router-dom";
+import { connect } from "react-redux";
+import { compose } from "redux";
+import { randomThunk } from "../../store/reducers/apiReducer";
+import { deleteUserThunk } from "../../store/reducers/usersReducer";
 
-const DropdawnUsers = (props) => {
-    const [name, setName] = useState(props.userName);
-    
+const DropdawnUsers = React.memo((props) => {
 
-    const subUsers = (
+    const [userName, setUserName] = useState(props.userName);
+
+    const onClick = (key) => {
+        setUserName(key);
+        props.randomThunk(props.keysApi);
+    };
+
+    const deleteUser = (key) => {
+        let index = props.keySubUsers.indexOf(key);
+        props.deleteUserThunk(key, index);
+        props.randomThunk(props.keysApi);
+        setUserName(props.userName);
+    };
+
+    const menu = (
         <Menu>
             {props.keySubUsers.map((key) => {
                 return (
@@ -15,15 +31,26 @@ const DropdawnUsers = (props) => {
                         <div>
                             <NavLink
                                 to={`/cards/user/${key}`}
-                                // onClick={(e) => {
-                                //     e.preventDefault();
-                                //     setName(key);
-                                // }}
+                                onClick={() => onClick(key)}
                             >
-                                {key} |{" "}
+                                {key}
                             </NavLink>
-                            <NavLink to={`/settings/${key}`}>
+
+                            <NavLink
+                                style={{ padding: "0 15px 0 15px" }}
+                                to={`/settings/${key}`}
+                            >
                                 <EditOutlined />
+                            </NavLink>
+
+                            <NavLink
+                                to={`/settings/${key}`}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    deleteUser(key);
+                                }}
+                            >
+                                <DeleteOutlined />
                             </NavLink>
                         </div>
                     </Menu.Item>
@@ -31,19 +58,29 @@ const DropdawnUsers = (props) => {
             })}
         </Menu>
     );
-
+    
     return (
-        <Dropdown overlay={subUsers} placement="bottomLeft">
-            <a
+        <Dropdown overlay={menu}>
+            <Link
                 className="ant-dropdown-link"
                 onClick={(e) => {
                     e.preventDefault();
                 }}
             >
-                {name}
-            </a>
+                {userName}
+            </Link>
         </Dropdown>
     );
+});
+
+const mapStateToProps = (state) => {
+    return {
+        userName: state.auth.user.userName,
+        keySubUsers: state.subUsers.keySubUsers,
+        keysApi: state.api.keysApi,
+    };
 };
 
-export default DropdawnUsers;
+export default compose(
+    connect(mapStateToProps, { deleteUserThunk, randomThunk })
+)(DropdawnUsers);
