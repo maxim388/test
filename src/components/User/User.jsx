@@ -3,7 +3,7 @@ import { Card } from "antd";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { withRouter } from "react-router-dom";
-import CardsApi from "../CardsApi/CardsApi";
+import CardsAPI from "../CardsAPI/CardsAPI";
 import { withAuthRedirect } from "../HOC/withAuthRedirect";
 
 const User = (props) => {
@@ -37,7 +37,7 @@ const User = (props) => {
                 })}
             </Card>
             <hr />
-            <CardsApi />
+            <CardsAPI />
         </>
     );
 };

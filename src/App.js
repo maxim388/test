@@ -3,17 +3,19 @@ import "antd/dist/antd.css";
 import { Layout, Menu, Breadcrumb, Row, Col } from "antd";
 import { SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { NavLink, Route } from "react-router-dom";
+import { connect } from "react-redux";
 import Settings from "./components/Settings/Settings";
 import AuthUserState from "./components/AuthUserState/AuthUserState";
 import DropdawnUsers from "./components/DropdawnUsers/DropdawnUsers";
 import LoginForm from "./components/LoginForm/LoginForm";
-import CardsApi from "./components/CardsApi/CardsApi";
+import CardsAPI from "./components/CardsAPI/CardsAPI";
 import User from "./components/User/User";
 import Auxiliary from "./components/Auxiliary/Auxiliary";
 
 const { Header, Content, Footer } = Layout;
 
 const App = (props) => {
+    debugger;
     return (
         <Layout>
             <Header style={{ position: "fixed", zIndex: 1, width: "100%" }}>
@@ -56,7 +58,7 @@ const App = (props) => {
                     className="site-layout-background"
                     style={{ padding: 24, minHeight: 380 }}
                 >
-                    <Route exact path="/cards" render={() => <CardsApi />} />
+                    <Route exact path="/cards" render={() => <CardsAPI />} />
                     <Route path="/cards/user/:key" render={() => <User />} />
                     <Route path="/cards/auxiliary/:api" render={() => <Auxiliary />}/>
                     <Route path="/settings/:key?" render={() => <Settings />} />
@@ -68,4 +70,10 @@ const App = (props) => {
     );
 };
 
-export default App;
+const mapStateToProps = (state) => {
+    return {
+        isAuth: state.auth.isAuth
+    }
+}
+
+export default connect(mapStateToProps)(App);
