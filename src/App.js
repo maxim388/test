@@ -15,7 +15,6 @@ import Auxiliary from "./components/Auxiliary/Auxiliary";
 const { Header, Content, Footer } = Layout;
 
 const App = (props) => {
-    debugger;
     return (
         <Layout>
             <Header style={{ position: "fixed", zIndex: 1, width: "100%" }}>
